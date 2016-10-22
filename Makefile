@@ -74,7 +74,8 @@ OPTIMIZE   = -O2
 DEFS       = 
 LIBS       =
 
-CC         = avr-gcc
+AVRTOOLSDIR: = ~/avrtools.old/bin/
+CC         = $(AVRTOOLSDIR)avr-gcc
 
 # Override is only needed by avr-lib build system.
 
@@ -103,15 +104,52 @@ atmega168_isp: LFUSE = FF
 atmega168_isp: EFUSE = 00
 atmega168_isp: isp
 
-atmega328p: TARGET = atmega328
-atmega328p: MCU_TARGET = atmega328p
-atmega328p: CFLAGS += '-DMAX_TIME_COUNT=F_CPU>>4' '-DBAUD_RATE=57600' '-DADABOOT=4' '-DWATCHDOG_MODS'
-atmega328p: AVR_FREQ = 16000000L 
-atmega328p: LDSECTION  = --section-start=.text=0x7800
-atmega328p: ADABoot_328.hex
+noled18: CFLAGS += '-DNOLED'
+noled18: AVR_FREQ = 18432000L
+noled18: adaboot328
+	mv ADABoot_328.hex ADABoot_328_noled18.hex
 
-atmega328p_isp: atmega328
-atmega328p_isp: TARGET = ADABoot_328
+ada16: AVR_FREQ = 16000000L
+ada16: adaboot328
+	mv ADABoot_328.hex ADABoot_328_16.hex
+
+ada18: AVR_FREQ = 18432000L
+ada18: adaboot328
+	mv ADABoot_328.hex ADABoot_328_18.hex
+
+x10116: AVR_FREQ = 16000000L
+x10116: CFLAGS += '-DMCUSIG_2=0x16'
+x10116: adaboot328
+	mv ADABoot_328.hex ADABoot_x101_16.hex
+
+x10118: AVR_FREQ = 18432000L
+x10118: CFLAGS += '-DMCUSIG_2=0x16'
+x10118: adaboot328
+	mv ADABoot_328.hex ADABoot_x101_18.hex
+
+x10120: AVR_FREQ = 20000000L
+x10120: CFLAGS += '-DMCUSIG_2=0x16'
+x10120: adaboot328
+	mv ADABoot_328.hex ADABoot_x101_20.hex
+
+usb128: AVR_FREQ = 16000000L
+usb128: MCU_TARGET = at90usb1287
+usb128: CFLAGS += '-DMAX_TIME_COUNT=F_CPU>>4' '-DBAUD_RATE=57600' '-DADABOOT=4' '-DWATCHDOG_MODS'
+usb128: LDSECTION  = --section-start=.text=0x1F000
+usb128: ADABoot_usb128_16.hex
+
+
+atmega328p: adaboot328
+	mv ADABoot_328.hex ADABoot_328_Arduino.hex
+
+adaboot328: MCU_TARGET = atmega328p
+adaboot328: CFLAGS += '-DMAX_TIME_COUNT=F_CPU>>4' '-DBAUD_RATE=57600' '-DADABOOT=4' '-DWATCHDOG_MODS'
+#adaboot328: AVR_FREQ:=16000000L
+adaboot328: LDSECTION  = --section-start=.text=0x7800
+adaboot328: ADABoot_328.hex
+
+atmega328p_isp: adaboot328
+atmega328p_isp: TARGET = ADABoot_328_Arduino
 atmega328p_isp: MCU_TARGET = atmega328p
 atmega328p_isp: HFUSE = DA
 atmega328p_isp: LFUSE = FF
@@ -146,7 +184,7 @@ isp-stk500: $(TARGET).hex
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 clean:
-	rm -rf *.o *.elf *.lst *.map *.sym *.lss *.eep *.srec *.bin *.hex
+	rm -rf *.o *.elf *.lst *.map *.sym *.lss *.eep *.srec *.bin
 
 %.lst: %.elf
 	$(OBJDUMP) -h -S $< > $@
