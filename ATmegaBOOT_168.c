@@ -182,7 +182,6 @@
 
 #endif
 #endif
-#endif
 
 #ifndef SPMCSR
 #define SPMCSR SPMCR
