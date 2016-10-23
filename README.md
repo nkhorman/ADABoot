@@ -20,7 +20,7 @@ It can be compiled for the following CPU variations;
 I added the AT90USB128x and ATMega328PB CPU support.
 
 You may need to massage the Makefile to get the build configuration and frequency that you're looking for.
-I added several targets to support my needs. I only using the Make for building.
+I added several targets to support my needs. I only use the Makefile for building.
 
 The compiler that I use for building this is avr-gcc 4.5.2.
 Using newer versions does/may result in a bootloader that won't fit into the 0x7800 - 0x7FFF space.
